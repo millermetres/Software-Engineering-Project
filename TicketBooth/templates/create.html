@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Create Event - TicketBooth</title>
+    </head>
+    <body>
+        hello {{user_type}}
+        <a href="/logoutAction">Logout</a>
+        <div>
+            <h2>Create Event</h2>
+            <form action="/createEventAction" method="POST">
+                <input type="text" name="name" placeholder="name" required>
+                <input type="text" name="location" placeholder="location" required>
+                <input type="text" name="event_type" placeholder="event type" required>
+                <input type="date" name="date" required>
+                <input type="number" name="capacity" min="1" required>
+                <input type="text" name="description" placeholder="Enter description here..." required>
+                <input type="number" name="price" min="1" required>
+                <input type="number" name="tickets_remaining" min="1" required>
+                <input type="submit" value="Submit">
+                {% if error %}
+                    <p class="error"><strong>Error:</strong> {{error}}</p>
+                {% endif %}
+            </form>
+        </div>
+    </body>
+</html>

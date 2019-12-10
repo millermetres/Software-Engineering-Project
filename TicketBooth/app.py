@@ -1,18 +1,11 @@
-from flask import render_template, Flask, request, session, url_for, redirect
+from flask import render_template, Flask, request, session, url_for, redirect, jsonify
 import pymysql.cursors
 import hashlib
 import sys
+from accounts import Customer, Account, Organiser
+from events import EventsCollection, Event
 
 app = Flask(__name__)
-
-# conn = pymysql.connect(host='localhost',
-#                        port=8889,
-#                        user='root',
-#                        password='root',
-#                        db='ticketbooth',
-#                        charset='utf8mb4',
-#                        cursorclass=pymysql.cursors.DictCursor
-#                     )
 
 @app.route('/')
 def hello():
@@ -32,34 +25,15 @@ def loginAction():
     password = request.form['password']
     user_type = request.form['user_type']
 
-    if user_type == 'customer':
-        # customer = UserCollection.loginCustomer(email, password)
-        customer = {
-                "type": 'customer',
-                "email": email,
-                "password": password
-        } #temp
+    user = Account.login(email, password, user_type)
 
-        if customer:
-            session['user'] = customer
-            return redirect(url_for('home'))
-        else:
-            error = 'Invalid email address or password'
-            return render_template('login.html', user_type=user_type, error=error)
+    if user:
+        session['user'] = user.__dict__
+        return redirect(url_for('home', events=None))
     else:
-        # organiser = UserCollection.loginOrganiser(email, password)
-        organiser = {
-                "type": 'organiser',
-                "email": email,
-                "password": password
-        } #temp
-
-        if organiser:
-            session['user'] = organiser
-            return redirect(url_for('home'))
-        else:
-            error = 'Invalid email address or password'
-            return render_template('login.html', user_type=user_type, error=error)
+        error = 'Invalid email address or password'
+        return render_template('login.html', user_type=user_type, error=error)
+    
 
 @app.route('/signup')
 def signup():
@@ -69,6 +43,7 @@ def signup():
 @app.route('/signupAction', methods=['POST'])
 def signupAction():
     email = request.form['email']
+    name = request.form['name']
     password = request.form['password']
     verify_password = request.form['verify_password']
     user_type = request.form['user_type']
@@ -76,39 +51,27 @@ def signupAction():
     if(password != verify_password):
         error = 'Passwords do not match'
         return render_template('signup.html', user_type=user_type, error=error)
-
-    if user_type == 'customer':
-        # exists = UserCollection.findCustomer(email)
-        exists = False #temp
-        if not exists:
-            # customer = UserCollection.addCustomer(email, password)
-            customer = {
-                "type": 'customer',
-                "email": email,
-                "password": password
-            } #temp
-
-            session['user'] = customer
-            return redirect(url_for('home'))
-        else:
-            error = 'Customer account with that email already exists'
-            return render_template('signup.html', user_type=user_type, error=error)
     else:
-        # exists = UserCollection.findOrganiser(email)
-        exists = False #temp
-        if not exists:
-            # organiser = UserCollection.addOrganiser(email, password)
-            organiser = {
-                "type": 'organiser',
-                "email": email,
-                "password": password
-            } #temp
-
-            session['user'] = organiser
-            return redirect(url_for('home'))
+        user = Account.register(name, email, password, user_type)
+        if user:
+            session['user'] = user.__dict__
+            return redirect(url_for('home', events=None))
         else:
-            error = 'Organiser account with that email already exists'
+            error = 'Account with that email already exists'
             return render_template('signup.html', user_type=user_type, error=error)
+    
+@app.route('/searchAction', methods=['POST'])
+def searchAction():
+    location = request.form['location'] if request.form['location'] != '' else '*'
+    name = request.form['name'] if request.form['name'] != '' else '*'
+    date = request.form['date'] if request.form['date'] != '' else '*'
+    event_type = request.form['event_type'] if request.form['event_type'] != '' else '*'
+
+    user = Account.fromDict(session['user'])
+    events = user.searchEvents(location, name, date, event_type)
+
+    return redirect(url_for('home', events=events))
+
 
 @app.route('/logoutAction')
 def logoutAction():
@@ -116,14 +79,73 @@ def logoutAction():
     return redirect("/", code=302)
 
 @app.route('/home')
-def home():
-    user = session['user']
-    user_type = user['type']
+def home(events=None):
+    if 'user' in session:
+        user = Account.fromDict(session['user'])
+        user_type = user.user_type
+        
+        if events == None:
+            events = user.searchEvents('*', '*', '*', '*')
 
-    if user_type == 'customer':
-        return render_template('custHome.html')
+        return render_template('home.html', events=events, user_type=user_type)
     else:
-        return render_template('orgHome.html')
+        return redirect("/", code=302)
+
+@app.route('/event')
+def event():
+    if 'user' in session:
+        user = Account.fromDict(session['user'])
+        name = request.args.get('name')
+        location = request.args.get('location')
+        date = request.args.get('date')
+        event = EventsCollection.getSingleEvent(name, location, date)
+        return render_template('event.html', event=event, user_type=user.user_type)
+
+@app.route('/buyTicket', methods=['POST'])
+def buyTicket():
+    if 'user' in session:
+        user = Account.fromDict(session['user'])
+        name = request.form['name']
+        date = request.form['date']
+        location = request.form['location']
+        num_tix = request.form['num_tix']
+
+        event = EventsCollection.getSingleEvent(name, location, date)
+        user.purchaseTickets(event, num_tix)
+        event.updateTicketAmount(num_tix)
+
+        url = "/event?name="+event.name+"&location="+event.location+"&date="+str(event.date)
+        return redirect(url, code=302)
+
+@app.route('/createEvent')
+def createEvent():
+    if 'user' in session:
+        user = Account.fromDict(session['user'])
+        if user.user_type == 'organiser':
+            return render_template('create.html')
+        else:
+            return redirect(url_for('home', events=None))
+
+@app.route('/createEventAction', methods=['POST'])
+def createEventAction():
+    if 'user' in session:
+        user = Account.fromDict(session['user'])
+        name = request.form['name']
+        date = request.form['date']
+        location = request.form['location']
+        event_type = request.form['event_type']
+        capacity = request.form['capacity'] 
+        description = request.form['description']
+        price = request.form['price']
+        tickets_remaining = request.form['tickets_remaining']
+
+        event = Event(name, location, event_type, date, capacity, description, price, tickets_remaining)
+        user.createEvent(event)
+        return redirect(url_for('home', events=None))
+
+
+        
+
 
 app.secret_key = 'secret :)'
 if __name__ == "__main__":

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Home - TicketBooth</title>
+</head>
+<body>
+    hello {{user_type}}
+    <a href="/logoutAction">Logout</a>
+    {% if user_type == 'organiser' %}
+        <a href="/createEvent">Create Event</a>
+    {% endif %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Capacity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in events %}
+                <tr>
+                    <td><a href="/event?name={{e.name}}&location={{e.location}}&date={{e.date}}">{{e.name}}</a></td>
+                    <td>{{e.location}}</td>
+                    <td>{{e.date}}</td>
+                    <td>{{e.event_type}}</td>
+                    <td>{{e.capacity}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{event.name}} - TicketBooth</title>
+</head>
+<body>
+    hello {{user_type}}
+    <a href="/logoutAction">Logout</a>
+    <p>{{event.name}}</p>
+    <p>{{event.location}}</p>
+    <p>{{event.event_type}}</p>
+    <p>{{event.date}}</p>
+    <p>{{event.capacity}}</p>
+    <p>{{event.description}}</p>
+    <p>{{event.tickets_remaining}}</p>
+    <p>${{event.price}}</p>
+    {% if event.tickets_remaining > 0 and user_type == 'customer' %}
+        <h3>Purchase Tickets</h3>
+        <form action="/buyTicket" method="POST">
+            Number of Tickets
+            <input type="number" name="num_tix" min="1" max="{{event.tickets_remaining}}">
+            <input type="hidden" name="name" value="{{event.name}}">
+            <input type="hidden" name="location" value="{{event.location}}">
+            <input type="hidden" name="date" value="{{event.date}}">
+            <input type="submit" value="Buy!">
+        </form>
+    {% endif %}
+</body>
+</html>
