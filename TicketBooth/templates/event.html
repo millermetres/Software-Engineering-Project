@@ -5,28 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{event.name}} - TicketBooth</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab&display=swap" rel="stylesheet">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
 </head>
 <body>
-    hello {{user_type}}
-    <a href="/logoutAction">Logout</a>
-    <p>{{event.name}}</p>
-    <p>{{event.location}}</p>
-    <p>{{event.event_type}}</p>
-    <p>{{event.date}}</p>
-    <p>{{event.capacity}}</p>
-    <p>{{event.description}}</p>
-    <p>{{event.tickets_remaining}}</p>
-    <p>${{event.price}}</p>
-    {% if event.tickets_remaining > 0 and user_type == 'customer' %}
-        <h3>Purchase Tickets</h3>
-        <form action="/buyTicket" method="POST">
-            Number of Tickets
-            <input type="number" name="num_tix" min="1" max="{{event.tickets_remaining}}">
-            <input type="hidden" name="name" value="{{event.name}}">
-            <input type="hidden" name="location" value="{{event.location}}">
-            <input type="hidden" name="date" value="{{event.date}}">
-            <input type="submit" value="Buy!">
-        </form>
-    {% endif %}
+    <div class="header">
+        <div class="header-title">
+            <a href="/home">TicketBooth</a>
+        </div>
+        <div class="header-menu">
+            Hello, {{user.name}}!
+            {% if user.user_type == 'organiser' %}
+                <a href="/createEvent">Create Event</a>
+            {% endif %}
+            {% if user.user_type == 'customer' %}
+                <a href="/transactions">View Transactions</a>
+            {% endif %}
+            <a href="/logoutAction">Logout</a>
+        </div>
+    </div>
+    <div class="event-body">
+        <h1>{{event.name}}</h1>
+        <div class="event-details">
+            <h2>Event Details</h2>
+            <div class="details-row">
+                <p><strong>Location:</strong> {{event.location}}</p>
+                <p><strong>Date:</strong> {{event.date}}</p>
+            </div>
+            <div class="details-row">
+                <p><strong>Type:</strong> {{event.event_type}}</p>
+                <p><strong>Max Capacity:</strong> {{event.capacity}} people</p>
+            </div>
+            <p><strong>Description:</strong></p>
+            <p>{{event.description}}</p>
+            <div class="details-row">
+                <p><strong>Tickets Remaining:</strong> {{event.tickets_remaining}}</p>
+                <p><strong>Price:</strong> ${{event.price}}</p>
+            </div>
+        </div>
+        {% if event.tickets_remaining > 0 and user.user_type == 'customer' %}
+            <div class="purchase">
+                <h3>Purchase Tickets</h3>
+                <form action="/buyTicket" method="POST">
+                    Number of Tickets
+                    <input type="number" name="num_tix" min="1" max="{{event.tickets_remaining}}">
+                    <input type="hidden" name="id" value="{{event.ID}}">
+                    <input type="submit" value="Buy!">
+                </form>
+            </div>
+            
+        {% elif user.user_type == 'organiser' and event.organiser_email == user.email%}
+            <a class="cancel-event" href="/deleteEvent?id={{event.ID}}">Cancel Event</a>
+            <a class="edit-event" href="/editEvent?id={{event.ID}}">Edit Event</a>
+        {% endif %}
+    </div>
+    
 </body>
 </html>

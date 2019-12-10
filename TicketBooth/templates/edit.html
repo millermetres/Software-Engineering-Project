@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Create Event - TicketBooth</title>
+        <title>Edit Event - TicketBooth</title>
         <link href="https://fonts.googleapis.com/css?family=Roboto+Slab&display=swap" rel="stylesheet">
         <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
     </head>
@@ -25,27 +25,25 @@
             </div>
         </div>
         <div class="event-form">
-            <h2>Create Event</h2>
-            <form action="/createEventAction" method="POST">
+            <h2>Edit Event</h2>
+            <form action="/editEventAction" method="POST">
                 <p>Event Name:</p>
-                <input type="text" name="name" placeholder="name" required>
+                <input type="text" name="name" placeholder="name" value="{{event.name}}">
                 <p>Event Location:</p>
-                <input type="text" name="location" placeholder="location" required>
-                <p>Event Type:</p>
-                <input type="text" name="event_type" placeholder="event type" required>
+                <input type="text" name="location" placeholder="location" value="{{event.location}}">
                 <p>Event Date:</p>
-                <input type="date" name="date" required>
+                <input type="date" name="date" value={{event.date}}>
                 <p>Event Max Capacity:</p>
-                <input type="number" name="capacity" min="1" required>
-                <p>Event Description:</p>
-                <textarea name="description" placeholder="Enter description here..." required></textarea>
+                <input type="number" name="capacity" min="1" value={{event.capacity}}>
                 <p>Ticket Price:</p>
-                <input type="number" name="price" min="1" required>
-                <p>Number of Available Tickets:</p>
-                <input type="number" name="tickets_remaining" min="1" required>
+                <input type="number" name="price" min="1" value={{event.price}}>
                 <p>Upload Supporting Documents:</p>
                 <input type="file" name="supporting_docs" multiple >
+                <input type="hidden" name="event_id" value={{event.ID}}>
                 <input type="submit" value="Submit">
+                {% if error %}
+                    <p class="error"><strong>Error:</strong> {{error}}</p>
+                {% endif %}
             </form>
         </div>
     </body>

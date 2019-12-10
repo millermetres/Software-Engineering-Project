@@ -149,8 +149,11 @@ class Customer(Account):
         super().__init__(name, email, password, user_type)
 
     def purchaseTickets(self, event, num_tix):
-        transaction = Transaction(self.email, event.name, event.location, event.date, num_tix)
+        transaction = Transaction(event.ID, self.email, event.name, event.location, event.date, num_tix, int(num_tix)*int(event.price), None, None, None)
         TransactionsCollection.addNewTransaction(transaction)
+    
+    def requestRefund(self, event_id, purchase_date):
+        TransactionsCollection.requestRefund(self.email, event_id, purchase_date)
 
 class Organiser(Account):
     def __init__(self, name, email, password, user_type):
@@ -158,3 +161,9 @@ class Organiser(Account):
 
     def createEvent(self, event):
         EventsCollection.addEvent(event)
+
+    def deleteEvent(self, event_id):
+        EventsCollection.deleteEvent(event_id)
+
+    def editEvent(self, event, n_name, n_location, n_date, n_capacity, n_price):
+        EventsCollection.editEvent(event, n_name, n_location, n_date, n_capacity, n_price)

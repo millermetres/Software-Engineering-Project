@@ -4,6 +4,7 @@ import hashlib
 import sys
 from accounts import Customer, Account, Organiser
 from events import EventsCollection, Event
+from transactions import TransactionsCollection, Transaction
 
 app = Flask(__name__)
 
@@ -59,18 +60,6 @@ def signupAction():
         else:
             error = 'Account with that email already exists'
             return render_template('signup.html', user_type=user_type, error=error)
-    
-@app.route('/searchAction', methods=['POST'])
-def searchAction():
-    location = request.form['location'] if request.form['location'] != '' else '*'
-    name = request.form['name'] if request.form['name'] != '' else '*'
-    date = request.form['date'] if request.form['date'] != '' else '*'
-    event_type = request.form['event_type'] if request.form['event_type'] != '' else '*'
-
-    user = Account.fromDict(session['user'])
-    events = user.searchEvents(location, name, date, event_type)
-
-    return redirect(url_for('home', events=events))
 
 
 @app.route('/logoutAction')
@@ -78,16 +67,23 @@ def logoutAction():
     session.clear()
     return redirect("/", code=302)
 
-@app.route('/home')
+@app.route('/home', methods=['GET', 'POST'])
 def home(events=None):
     if 'user' in session:
         user = Account.fromDict(session['user'])
         user_type = user.user_type
-        
-        if events == None:
-            events = user.searchEvents('*', '*', '*', '*')
+        events = []
 
-        return render_template('home.html', events=events, user_type=user_type)
+        if request.method == 'GET':
+            events = user.searchEvents('*', '*', '*', '*')
+        elif request.method == 'POST':
+            location = request.form['location'] if request.form['location'] != '' else '*'
+            name = request.form['name'] if request.form['name'] != '' else '*'
+            date = request.form['date'] if request.form['date'] != '' else '*'
+            event_type = request.form['event_type'] if request.form['event_type'] != '' else '*'
+            events = user.searchEvents(location, name, date, event_type)
+
+        return render_template('home.html', events=events, user=user)
     else:
         return redirect("/", code=302)
 
@@ -95,26 +91,22 @@ def home(events=None):
 def event():
     if 'user' in session:
         user = Account.fromDict(session['user'])
-        name = request.args.get('name')
-        location = request.args.get('location')
-        date = request.args.get('date')
-        event = EventsCollection.getSingleEvent(name, location, date)
-        return render_template('event.html', event=event, user_type=user.user_type)
+        event_id = request.args.get('id')
+        event = EventsCollection.getSingleEvent(event_id)
+        return render_template('event.html', event=event, user=user)
 
 @app.route('/buyTicket', methods=['POST'])
 def buyTicket():
     if 'user' in session:
         user = Account.fromDict(session['user'])
-        name = request.form['name']
-        date = request.form['date']
-        location = request.form['location']
+        event_id = request.form['id']
         num_tix = request.form['num_tix']
 
-        event = EventsCollection.getSingleEvent(name, location, date)
+        event = EventsCollection.getSingleEvent(event_id)
         user.purchaseTickets(event, num_tix)
         event.updateTicketAmount(num_tix)
 
-        url = "/event?name="+event.name+"&location="+event.location+"&date="+str(event.date)
+        url = "/event?id="+str(event.ID)
         return redirect(url, code=302)
 
 @app.route('/createEvent')
@@ -122,7 +114,7 @@ def createEvent():
     if 'user' in session:
         user = Account.fromDict(session['user'])
         if user.user_type == 'organiser':
-            return render_template('create.html')
+            return render_template('create.html', user=user)
         else:
             return redirect(url_for('home', events=None))
 
@@ -139,12 +131,59 @@ def createEventAction():
         price = request.form['price']
         tickets_remaining = request.form['tickets_remaining']
 
-        event = Event(name, location, event_type, date, capacity, description, price, tickets_remaining)
+        event = Event(None, name, location, event_type, date, capacity, description, price, tickets_remaining, user.email, None)
         user.createEvent(event)
         return redirect(url_for('home', events=None))
 
+@app.route('/deleteEvent')
+def deleteEvent():
+    if 'user' in session:
+        user = Account.fromDict(session['user'])
+        event_id = request.args.get('id')
+        user.deleteEvent(event_id)
+        return redirect(url_for('home', events=None))
 
+@app.route('/editEvent')
+def editEvent():
+    if 'user' in session:
+        user = Account.fromDict(session['user'])
+        event_id = request.args.get('id')
+        event = EventsCollection.getSingleEvent(event_id)
+        if user.user_type == 'organiser':
+            return render_template('edit.html', user=user, event=event)
+        else:
+            return redirect(url_for('home', events=None))
+
+@app.route('/editEventAction', methods=['POST'])
+def editEventAction():
+    if 'user' in session:
+        user = Account.fromDict(session['user'])
+        event_id = request.form['event_id']
+        name = request.form['name']
+        date = request.form['date']
+        location = request.form['location']
+        capacity = request.form['capacity'] 
+        price = request.form['price']
+
+        event = EventsCollection.getSingleEvent(event_id)
+        user.editEvent(event, name, location, date, capacity, price)
+        return redirect(url_for('home', events=None))
         
+@app.route('/transactions')
+def viewTransactions():
+    if 'user' in session:
+        user = Account.fromDict(session['user'])
+        transactions = TransactionsCollection.getUserTransactions(user.email)
+        return render_template('transactions.html', user=user, transactions=transactions)
+
+@app.route('/requestRefund', methods=['POST'])
+def requestRefund():
+    if 'user' in session:
+        user = Account.fromDict(session['user'])
+        event_id = request.form['id']
+        purchase_date = request.form['purchase_date']
+        user.requestRefund(event_id, purchase_date)
+        return redirect(url_for('viewTransactions'))
 
 
 app.secret_key = 'secret :)'

@@ -5,34 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Home - TicketBooth</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab&display=swap" rel="stylesheet">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
 </head>
 <body>
-    hello {{user_type}}
-    <a href="/logoutAction">Logout</a>
-    {% if user_type == 'organiser' %}
-        <a href="/createEvent">Create Event</a>
-    {% endif %}
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Location</th>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Capacity</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for e in events %}
-                <tr>
-                    <td><a href="/event?name={{e.name}}&location={{e.location}}&date={{e.date}}">{{e.name}}</a></td>
-                    <td>{{e.location}}</td>
-                    <td>{{e.date}}</td>
-                    <td>{{e.event_type}}</td>
-                    <td>{{e.capacity}}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="header">
+        <div class="header-title">
+            <a href="/home">TicketBooth</a>
+        </div>
+        <div class="header-menu">
+            Hello, {{user.name}}!
+            {% if user.user_type == 'organiser' %}
+                <a href="/createEvent">Create Event</a>
+            {% endif %}
+            {% if user.user_type == 'customer' %}
+                <a href="/transactions">View Transactions</a>
+            {% endif %}
+            <a href="/logoutAction">Logout</a>
+        </div>
+    </div>
+    <div class="search-area">
+        <h1>Events</h1>
+        <form action="/home" method="POST">
+            <input type="text" name="name" placeholder="name" >
+            <input type="text" name="location" placeholder="location" >
+            <input type="text" name="event_type" placeholder="event type" >
+            <input type="date" name="date" >
+            <input type="submit" value="Search">
+        </form>
+    </div>
+    <div class='results-area'>    
+        {% for e in events %}
+            <div class="search-result">
+                <h1><a href="/event?id={{e.ID}}">{{e.name}}</a></h1>
+                <h2>Venue: {{e.location}}</h2>
+                <h3>Ticket Price: ${{e.price}}.00</h3>
+                <div class="result-minor">
+                    <p>Date: {{e.date}}</p>
+                    <p>Event Category: {{e.event_type}}</p>
+                    <p>Max Capacity: {{e.capacity}}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
 </body>
 </html>

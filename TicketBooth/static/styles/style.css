@@ -1,0 +1,272 @@
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box; 
+    -webkit-box-sizing: border-box; 
+    font-family: 'Roboto Slab', serif;
+}
+
+.header {
+    display: flex;
+    width: 100%;
+    height: 10vh;
+    background-color:black;
+    color: white;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-title{
+    padding: 1rem;
+    flex-grow: 10;
+}
+
+.header-title a{
+    color: white;
+    text-decoration-line: none;
+}
+
+.header-menu {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-evenly;
+    flex-direction: row;
+}
+
+.header-menu a{
+    color: #4691A4;
+    text-decoration-line: none;
+}
+
+.search-area{
+    width: 90%;
+    height: 12vh;
+    margin: 0 auto;
+    margin-bottom: 2vh;
+}
+
+.search-area h1 {
+    margin: 0;
+    text-align: center;
+}
+
+.search-area form{
+    height: 50%;
+    padding-top: 1vh;
+    margin: 0 auto;
+}
+
+form input[type=text], form input[type=date], form input[type=number], form input[type=password], textarea{
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	border:1px solid #BEBEBE;
+	padding: 7px;
+    margin:0px;
+    font-family: 'Roboto Slab', serif;
+	outline: none;	
+}
+
+form input[type=date] {
+    padding: 6px 7px;
+}
+
+form input[type=text]:focus, form input[type=date]:focus{
+	-moz-box-shadow: 0 0 8px #88D5E9;
+	-webkit-box-shadow: 0 0 8px #88D5E9;
+	box-shadow: 0 0 8px #88D5E9;
+	border: 1px solid #88D5E9;
+}
+
+form input[type=submit]{
+	background: #4B99AD;
+	padding: 8px 15px 8px 15px;
+	border: none;
+	color: #fff;
+}
+
+form input[type=submit]:hover{
+	background: #4691A4;
+	box-shadow:none;
+	-moz-box-shadow:none;
+	-webkit-box-shadow:none;
+}
+
+.results-area {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.search-result h1, .search-result h3, .search-result h3{
+    margin: 0;
+}
+
+.search-result{
+    width: 98%;
+    border:1px solid #BEBEBE;
+    margin-bottom: 2vh;
+    padding-left: 2%;
+}
+
+.search-result a{
+    color: #4691A4;
+    text-decoration-line: none;
+}
+
+.event-body{
+    width: 90%;
+    box-sizing: border-box;
+    margin: 0 auto;
+}
+
+.event-details{
+    margin-bottom: 10vh;
+}
+
+.details-row{
+    display: flex;
+    flex-direction: row;
+}
+
+.details-row p{
+    width: 50%;
+}
+
+.cancel-event, .cust-login-btn {
+    background: rgb(143, 22, 22);
+    color: white;
+    text-decoration-line: none;
+    width: 60px;
+    height: 15px;
+    padding: 10px;
+}
+
+.edit-event, .org-login-btn {
+    background: #4691A4;
+    color: white;
+    text-decoration-line: none;
+    width: 60px;
+    height: 15px;
+    padding: 10px;
+}
+
+.event-form{
+    width: 60%;
+    margin: 0 auto;
+}
+
+.event-form form input, .event-form form textarea {
+    display: block;
+    margin: 8px 0;
+    width: 100%;
+}
+
+.event-form form textarea {
+    height: 20vh;
+}
+
+.event-form p{
+    margin: 0;
+    padding: 0;
+}
+
+.event-form form input[type=submit] {
+    height: 40px;
+    margin: 3vh 0;
+}
+
+.purchase {
+    border-top: 1px solid black;
+    margin-bottom: 4vh;
+}
+
+.transactions {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.transactions table {
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+.transactions table tr {
+    height: 8vh;
+    border: solid;
+    border-width: 1px 0;
+}
+
+.transactions table tr:first-child {
+    border-top: none;
+}
+
+.transactions table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.splash-outer {
+    width: 100%;
+    height: 100vh;
+    background: black;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+
+.splash-inner{
+    margin: 0 auto;
+    text-align: center;
+}
+
+.splash-inner h1{
+    margin: 0;
+    margin-bottom: 6vh;
+    font-size: 72px;
+}
+
+.cust-login-btn {
+    margin-right: 5px
+}
+
+.org-login-btn {
+    margin-left: 5px;
+}
+
+.login-outer {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    background: black;
+}
+
+.login-inner {
+    margin: 0 auto;
+    background: white;
+    height: 60%;
+    box-sizing: border-box;
+    padding: 40px;
+    padding-top: 20px;
+    border-radius: 5px;
+
+}
+
+.login-inner form input{
+    display: block;
+    margin: 16px 0;
+    width: 100%;
+}
+
+.login-inner form input[type=submit]{
+    height: 30px;
+    margin: 1vh 0;
+}
+
+.login-inner a{
+    color: rgb(143, 22, 22);
+    text-decoration-line: none;
+}

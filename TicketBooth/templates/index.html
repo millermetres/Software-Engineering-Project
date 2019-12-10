@@ -5,9 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>TicketBooth</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab&display=swap" rel="stylesheet">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
 </head>
 <body>
-    <a href="/login?user_type=customer">Login as Customer</a>
-    <a href="/login?user_type=organiser">Login as Organiser</a>
+    <div class="splash-outer">
+        <div class="splash-inner">
+            <h1>TicketBooth</h1>
+            <div>
+                <a class="cust-login-btn" href="/login?user_type=customer">Login as Customer</a>
+                <a class="org-login-btn" href="/login?user_type=organiser">Login as Organiser</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

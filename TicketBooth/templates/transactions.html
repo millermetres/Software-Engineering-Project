@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Transactions - TicketBooth</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab&display=swap" rel="stylesheet">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="header-title">
+            <a href="/home">TicketBooth</a>
+        </div>
+        <div class="header-menu">
+            Hello, {{user.name}}!
+            {% if user.user_type == 'organiser' %}
+                <a href="/createEvent">Create Event</a>
+            {% endif %}
+            {% if user.user_type == 'customer' %}
+                <a href="/transactions">View Transactions</a>
+            {% endif %}
+            <a href="/logoutAction">Logout</a>
+        </div>
+    </div>
+    <div class="transactions">
+        <h2>Transactions History</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Date</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Date Purchased</th>
+                    <th>Request Refund</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in transactions %}
+                    <tr>
+                        <td>{{t.name}}</td>
+                        <td>{{t.location}}</td>
+                        <td>{{t.date}}</td>
+                        <td>{{t.quantity}}</td>
+                        <td>${{t.price}}.00</td>
+                        <td>{{t.purchase_date}}</td>
+                        {%if t.refundable %}
+                            <td><form action="/requestRefund" method="post">
+                                <input type="hidden" name="id" value="{{t.event_id}}">
+                                <input type="hidden" name="purchase_date" value="{{t.purchase_date}}">
+                                <input type="submit" value="Request">
+                            </form></td>
+                        {%elif t.requested %}
+                            <td>Refund Pending</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+</body>
+</html>
