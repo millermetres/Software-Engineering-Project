@@ -1,4 +1,5 @@
 import pymysql.cursors
+from tbsystem import TicketBoothSystem
 
 def getConn():
         conn = pymysql.connect(host='localhost',
@@ -36,8 +37,7 @@ class TransactionsCollection:
         conn.commit()
         cursor.close()
 
-        # for d in data:
-        #     refund users
+        # TicketBoothSystem.sendCancelNotifications(data)
 
     @staticmethod
     def editTransactions(event_id):
