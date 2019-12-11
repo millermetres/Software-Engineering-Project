@@ -43,6 +43,19 @@ class AccountsCollection:
         return data
 
     @staticmethod
+    def loginAdmin(email, password):
+        conn = getConn()
+        cursor = conn.cursor()
+
+        query = 'SELECT * FROM admin WHERE email = %s AND password = %s'
+        cursor.execute(query, (email, password))
+        data = cursor.fetchone()
+
+        cursor.close()
+
+        return data
+
+    @staticmethod
     def findCustomer(email):
         conn = getConn()
         cursor = conn.cursor()
@@ -108,10 +121,16 @@ class Account:
                 return Customer(data['name'], data['email'], data['password'], data['user_type'])
             else:
                 return None
-        else:
+        elif user_type == 'organiser':
             data = AccountsCollection.loginOrganiser(email, password)
             if data:
                 return Organiser(data['name'], data['email'], data['password'], data['user_type'])
+            else:
+                return None
+        else:
+            data = AccountsCollection.loginAdmin(email, password)
+            if data:
+                return Admin(data['name'], data['email'], data['password'], data['user_type'])
             else:
                 return None
 
@@ -136,8 +155,10 @@ class Account:
     def fromDict(dic):
         if dic['user_type'] == 'customer':
             return Customer(dic['name'], dic['email'], dic['password'], dic['user_type'])
-        else:
+        elif dic['user_type'] == 'organiser':
             return Organiser(dic['name'], dic['email'], dic['password'], dic['user_type'])
+        else:
+            return Admin(dic['name'], dic['email'], dic['password'], dic['user_type'])
 
     def searchEvents(self, location, name, date, event_type):
         events = EventsCollection.getEvents(location, name, date, event_type)
@@ -167,3 +188,13 @@ class Organiser(Account):
 
     def editEvent(self, event, n_name, n_location, n_date, n_capacity, n_price):
         EventsCollection.editEvent(event, n_name, n_location, n_date, n_capacity, n_price)
+
+class Admin(Account):
+    def __init__(self, name, email, password, user_type):
+        super().__init__(name, email, password, user_type)
+
+    def approveRefund(self, email, event_id, purchase_date):
+        data = TransactionsCollection.getSingleTransaction(email, event_id, purchase_date)
+        event = EventsCollection.getSingleEvent(event_id)
+        EventsCollection.updateTicketAmount(event, -1*int(data['quantity']))
+        TransactionsCollection.approveRefund(email, event_id, purchase_date, data)

@@ -21,6 +21,9 @@
             {% if user.user_type == 'customer' %}
                 <a href="/transactions">View Transactions</a>
             {% endif %}
+            {% if user.user_type == 'admin' %}
+                <a href="/refunds">View Refund Requests</a>
+            {% endif %}
             <a href="/logoutAction">Logout</a>
         </div>
     </div>

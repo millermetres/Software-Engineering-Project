@@ -185,6 +185,22 @@ def requestRefund():
         user.requestRefund(event_id, purchase_date)
         return redirect(url_for('viewTransactions'))
 
+@app.route('/refunds')
+def refunds():
+    if 'user' in session:
+        user = Account.fromDict(session['user'])
+        transactions = TransactionsCollection.getRefundRequests()
+        return render_template('refunds.html', user=user, transactions=transactions)
+
+@app.route('/approveRefund', methods=['POST'])
+def approveRefund():
+    if 'user' in session:
+        user = Account.fromDict(session['user'])
+        event_id = request.form['id']
+        purchase_date = request.form['purchase_date']
+        email = request.form['email']
+        user.approveRefund(email, event_id, purchase_date)
+        return redirect(url_for('refunds'))
 
 app.secret_key = 'secret :)'
 if __name__ == "__main__":

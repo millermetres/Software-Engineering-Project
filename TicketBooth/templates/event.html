@@ -21,6 +21,9 @@
             {% if user.user_type == 'customer' %}
                 <a href="/transactions">View Transactions</a>
             {% endif %}
+            {% if user.user_type == 'admin' %}
+                <a href="/refunds">View Refund Requests</a>
+            {% endif %}
             <a href="/logoutAction">Logout</a>
         </div>
     </div>
@@ -48,7 +51,11 @@
                 <h3>Purchase Tickets</h3>
                 <form action="/buyTicket" method="POST">
                     Number of Tickets
-                    <input type="number" name="num_tix" min="1" max="{{event.tickets_remaining}}">
+                    {% if event.tickets_remaining < 5 %}
+                        <input type="number" name="num_tix" min="1" max="{{event.tickets_remaining}}">
+                    {% else %}
+                        <input type="number" name="num_tix" min="1" max="5">
+                    {% endif %}
                     <input type="hidden" name="id" value="{{event.ID}}">
                     <input type="submit" value="Buy!">
                 </form>

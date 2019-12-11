@@ -21,7 +21,9 @@
                         <p class="error"><strong>Error:</strong> {{error}}</p>
                     {% endif %}
                 </form>
-                <a href="/signup?user_type={{user_type}}">Sign Up</a>
+                {% if user_type != 'admin' %}
+                    <a href="/signup?user_type={{user_type}}">Sign Up</a>
+                {% endif %}
             </div>
         </div>
     </body>
