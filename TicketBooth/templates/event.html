@@ -50,12 +50,18 @@
             <div class="purchase">
                 <h3>Purchase Tickets</h3>
                 <form action="/buyTicket" method="POST">
-                    Number of Tickets
+                    <p>Number of Tickets</p>
                     {% if event.tickets_remaining < 5 %}
                         <input type="number" name="num_tix" min="1" max="{{event.tickets_remaining}}">
                     {% else %}
                         <input type="number" name="num_tix" min="1" max="5">
                     {% endif %}
+                    <p>Card Number</p>
+                    <input type="text" name="card" placeholder="Card Number" required>
+                    <p>Expiry Date</p>
+                    <input type="text" name="exp_date" placeholder="Expiry Date" required>
+                    <p>CVV</p>
+                    <input type="password" name="cvv" placeholder="CVV" required>
                     <input type="hidden" name="id" value="{{event.ID}}">
                     <input type="submit" value="Buy!">
                 </form>

@@ -167,7 +167,7 @@ form input[type=submit]:hover{
     height: 20vh;
 }
 
-.event-form p{
+.event-form p, .purchase p{
     margin: 0;
     padding: 0;
 }
@@ -180,6 +180,16 @@ form input[type=submit]:hover{
 .purchase {
     border-top: 1px solid black;
     margin-bottom: 4vh;
+}
+
+.purchase form input{
+    display: block;
+    margin: 8px 0;
+    width: 40%;
+}
+
+.purchase form input[type=number], .purchase form input[type=password]{
+    width: 5%;
 }
 
 .transactions {
