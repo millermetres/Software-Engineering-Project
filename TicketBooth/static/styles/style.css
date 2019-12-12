@@ -270,3 +270,23 @@ form input[type=submit]:hover{
     color: rgb(143, 22, 22);
     text-decoration-line: none;
 }
+
+.apply-btn{
+    width: 90%;
+    margin: 0 auto;
+    margin-bottom: 3vh;
+    margin-top: 3vh;
+}
+
+.wholesale-apply {
+    display: flex;
+    width: 100%;
+    height: 90vh;
+    justify-items: center;
+    align-items: center;
+    text-align: center;
+}
+
+.wholesale-apply div{
+    margin: 0 auto;
+}

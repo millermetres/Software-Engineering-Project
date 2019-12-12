@@ -192,6 +192,12 @@ def refunds():
         transactions = TransactionsCollection.getRefundRequests()
         return render_template('refunds.html', user=user, transactions=transactions)
 
+@app.route('/apply')
+def apply():
+    if 'user' in session:
+        user = Account.fromDict(session['user'])
+        return render_template('apply.html', user=user)
+
 @app.route('/approveRefund', methods=['POST'])
 def approveRefund():
     if 'user' in session:

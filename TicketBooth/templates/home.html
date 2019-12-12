@@ -51,6 +51,11 @@
             </div>
         {% endfor %}
     </div>
+    <div class="apply-btn">
+        {% if user.user_type == 'customer' %}
+            <a class="cust-login-btn" href="/apply">Apply To Be a Wholesaler</a>
+        {% endif %}
+    </div>
     
 </body>
 </html>
